@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="journalstyle.css">
+    <title>General Journal</title>
+</head>
+<body>
+    <div class="container">
+        <h1>General Journal Entry</h1>
+        <form id="journalForm">
+            <table id="inputTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Account Titles</th>
+                        <th>PR</th>
+                        <th>DR</th>
+                        <th>CR</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically populated -->
+                </tbody>
+            </table>
+            <button type="button" class="btn" onclick="addRow()">Add Entry</button>
+            <button type="button" class="btn" onclick="deleteall()">Restart</button>
+        </form>
+
+        <div class="submitted-section">
+            <h1>Ledger</h1>
+            <div id="ledgerGroups"></div>
+        </div>
+    </div>
+    <script src="journalscript.js"></script>
+</body>
+</html>
