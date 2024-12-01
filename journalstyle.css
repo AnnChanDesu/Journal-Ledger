@@ -1,76 +1,435 @@
-body {
-    font-family: Arial, sans-serif;
+:root {
+    /* Color Palette */
+    --primary-green: #2E8B57;       /* Sea Green */
+    --secondary-green: #228B22;     /* Forest Green */
+    --accent-yellow: #FFD700;       /* Gold */
+    --background-cream: #FFFAF0;    /* Floral White */
+    --text-dark: #2C3E50;           /* Deep Charcoal */
+    --border-light: #E0E0E0;        /* Soft Gray */
+}
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
 }
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: #fff;
-    padding: 50px 200px 100px 90px;
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--background-cream);
+    color: var(--text-dark);
+}
+
+/* Logo Styling */
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-yellow);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* Navigation Styling */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    background-color: rgba(46, 139, 87, 0.1);
+    padding: 10px 0;
+}
+
+.main-nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+}
+
+.main-nav ul li {
+    position: relative;
+}
+
+.main-nav ul li a {
+    text-decoration: none;
+    color: var(--primary-green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-h1 {
+
+.main-nav ul li a:hover {
+    background-color: rgba(46, 139, 87, 0.1);
+    color: var(--secondary-green);
+}
+
+.main-nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: var(--accent-yellow);
+    transition: all 0.3s ease;
+}
+
+.main-nav ul li a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+/* Header Styles */
+header {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: white;
+    padding: 20px 20px 0;
     text-align: center;
-    color: #333;
-    padding-bottom: 50px;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--accent-yellow),
+        var(--accent-yellow) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Ledger Container */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-light);
+    background: linear-gradient(to bottom right, white, var(--background-cream));
+    position: relative;
+    overflow: hidden;
+}
+
+.container::before {
+    content: "₹ £ $ €";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    font-size: 200px;
+    color: rgba(46, 139, 87, 0.03);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Section Headings */
+.journal-container h2,
+.ledger-container h2,
+.trial-balance-container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-green);
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent-yellow);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Table Styles */
 table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
 }
-table th, table td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
+
+th {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 15px 20px;
+    border-bottom: 3px solid var(--accent-yellow);
 }
-table th {
-    background-color: #f8f8f8;
+
+td {
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid var(--border-light);
+    transition: background-color 0.3s ease;
 }
+
+td:hover {
+    background-color: rgba(46, 139, 87, 0.03);
+}
+
+/* Button Styles */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
 .btn {
     display: inline-block;
-    background-color: #28a745;
+    background-color: var(--primary-green);
     color: white;
-    padding: 10px 15px;
-    text-align: center;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
+    padding: 12px 25px;
     border: none;
-    margin: 5px 0;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
+
+.btn:hover {
+    background-color: var(--secondary-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
 .btn-danger {
-    background-color: #dc3545;
+    background-color: #C62828;
 }
-.btn-secondary {
-    background-color: #007bff;
+
+.btn-print {
+    background-color: var(--accent-yellow);
+    color: var(--text-dark);
 }
-.submitted-section {
-    margin-top: 50px;
+
+.btn-print:hover {
+    background-color: #FFD700;
 }
+
+/* Footer Styles */
+footer {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 0 0 12px 12px;
+    position: relative;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 20px 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .main-nav ul li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-nav ul li a {
+        display: block;
+        padding: 10px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 10px 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container::before {
+        font-size: 100px;
+    }
+
+    th, td {
+        padding: 8px 10px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Print Styles (mas cute tignan sa pdf)*/
+@media print {
+    body {
+        background-color: white;
+    }
+
+    .container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    table {
+        box-shadow: none;
+        border: 1px solid var(--border-light);
+    }
+
+    .main-nav {
+        display: none;
+    }
+}
+
+/* Optional: Subtle Animations and Interactions (yung subtle na symbols sa ledger kaso di ko rin halata)*/
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 5; }
+}
+
+.container, header, footer {
+    animation: fadeIn 0.5s ease-out;
+}
+
+input.sub-account {
+    text-indent: 20px; /* Add indentation */
+}
+
+/* Ledger Group Styling */
 .group {
-    margin-bottom: 30px;
+    position: relative;
+    margin-bottom: 20px;
+    padding-top: 40px; /* Add some padding on top for alignment */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-light);
 }
+
+/* Group Header Styling */
 .group-header {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: flex-start; /* Align items at the top */
+    padding: 10px;
+    background-color: var(--primary-green);
+    color: white;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 20px;
 }
+
+.group-header .account-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Ensures the account title is centered */
+    position: relative;
+}
+
+/* Account Title Styling */
+.account-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center; /* Center the account title text */
+}
+
+/* Posting Reference (PR) Styling */
+.posting-ref {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-right: 10px;
+    color: var(--accent-yellow); /* Using accent yellow for visibility */
+}
+
+/* Ledger Table Styling */
 .ledger-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
-}
-.ledger-table th, .ledger-table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ddd;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.tabbed {
-    padding-left: 20px;
+.ledger-table th {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 15px;
+    border-bottom: 3px solid var(--accent-yellow);
+}
+
+.ledger-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Group Total Row Styling */
+.group-total {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    text-align: right;
+    padding: 10px 15px;
+    border-top: 2px solid var(--border-light);
 }
