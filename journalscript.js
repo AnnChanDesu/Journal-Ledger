@@ -46,10 +46,12 @@ function saveData() {
         });
 
         journalEntries.push(entry);
-    }
 
-    localStorage.setItem("journalEntries", JSON.stringify(journalEntries));
-    updateLedger();
+        // Existing saveData logic
+        localStorage.setItem("journalEntries", JSON.stringify(journalEntries));
+        updateLedger();
+        updateTrialBalance(); // Update trial balance
+    }
 }
 
 function loadData() {
@@ -67,6 +69,7 @@ function loadData() {
 function addRow(entry = {}) {
     const table = document.getElementById("inputTable").querySelector("tbody");
 
+    // Main row
     const mainRow = table.insertRow();
     mainRow.innerHTML = `
         <td><input type="date" name="date[]" value="${entry.date || ""}" onchange="saveData()" required></td>
@@ -77,16 +80,18 @@ function addRow(entry = {}) {
         <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Remove</button></td>
     `;
 
+    // Sub row
     const subRow = table.insertRow();
     subRow.innerHTML = `
         <td></td>
-        <td><input type="text" name="sub_account_title[]" value="${entry.subAccount || ""}" placeholder="Sub Account Title" class="tabbed" onchange="saveData()" required></td>
+        <td><input type="text" name="sub_account_title[]" value="${entry.subAccount || ""}" placeholder="Sub Account Title" class="sub-account" onchange="saveData()" required></td>
         <td><input type="text" name="sub_post_ref[]" value="${entry.subPr || ""}" placeholder="PR (ex. 310)" onchange="saveData()" required></td>
         <td></td>
         <td><input type="number" name="credit[]" value="${entry.credit || ""}" min="0" step="0.01" onchange="saveData()" required></td>
         <td></td>
     `;
 
+    // Description row
     const descRow = table.insertRow();
     descRow.innerHTML = `
         <td></td>
@@ -95,6 +100,7 @@ function addRow(entry = {}) {
         <td></td>
     `;
 }
+
 
 function deleteRow(button) {
     const row = button.closest("tr");
@@ -118,19 +124,18 @@ function updateLedger() {
             if (!groups[entry.pr]) groups[entry.pr] = [];
             groups[entry.pr].push({
                 ...entry,
-                accountType: "Main Account",
-                accountTitle: entry.mainAccount, // Set account title to main account
-                debit: entry.debit,
-                credit: 0 // Automatically set credit to 0 for main account
+                accountType: '',
+                accountTitle: entry.mainAccount,
+                credit: 0
             });
         }
         if (entry.subPr && entry.subPr !== entry.pr) {
             if (!groups[entry.subPr]) groups[entry.subPr] = [];
             groups[entry.subPr].push({
                 ...entry,
-                accountType: "Sub Account",
-                accountTitle: entry.subAccount, // Set account title to sub account
-                debit: 0, // Automatically set debit to 0 for sub account
+                accountType: "",
+                accountTitle: entry.subAccount,
+                debit: 0,
                 credit: entry.credit
             });
         }
@@ -141,17 +146,22 @@ function updateLedger() {
         const groupDiv = document.createElement("div");
         groupDiv.classList.add("group");
 
-        let groupTotal = 0;
+        let groupTotal = 0; // Initialize group total for the posting reference
 
+        // Header for the group
         groupDiv.innerHTML = `
             <div class="group-header">
-                Posting Reference: ${prKey}
+                <div class="account-header">
+                    <span class="account-title">${entries[0].accountTitle}</span> <!-- Removed parenthesis here -->
+                    <span class="posting-ref">PR: ${prKey}</span>
+                </div>
             </div>
             <table class="ledger-table">
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Account</th>
+                        <th>Journal Entry</th>
                         <th>DR</th>
                         <th>CR</th>
                         <th>Total</th>
@@ -159,52 +169,132 @@ function updateLedger() {
                 </thead>
                 <tbody>
                     ${entries.map((entry) => {
-                        let entryTotal = entry.debit || entry.credit;
-                        if (prKey == "1" || "5"){
-                            if (entryTotal = entry.debit){
-                                groupTotal += entryTotal
-                            } if (entryTotal = entry.credit){
-                                groupTotal -= entryTotal
-                            }
+                        let adjustedDebit = entry.debit;
+                        let adjustedCredit = entry.credit;
+                        let entryTotal = 0;
+
+                        if (/^[2-4]/.test(prKey)) {
+                            // If PR starts with 2, 3, or 4, calculate Total = Credit - Debit
+                            entryTotal = adjustedCredit - adjustedDebit;
                         } else {
-                            if (entryTotal = entry.credit){
-                                groupTotal += entryTotal
-                            } if (entryTotal = entry.debit){
-                                groupTotal -= entryTotal
-                            }
+                            // If PR starts with 1 or 5, calculate Total = Debit - Credit
+                            entryTotal = adjustedDebit - adjustedCredit;
                         }
+
+                        // Accumulate the total for the posting reference
+                        groupTotal += entryTotal;
 
                         return `
                             <tr>
                                 <td>${entry.date}</td>
-                                <td>${entry.accountTitle} (${entry.accountType})</td>
-                                <td>${entry.debit || 0}</td>
-                                <td>${entry.credit || 0}</td>
+                                <td>${entry.description} </td> <!-- Removed the account type here -->
+                                <td>J1</td>
+                                <td>${adjustedDebit}</td>
+                                <td>${adjustedCredit}</td>
                                 <td>${entryTotal}</td>
                             </tr>
                         `;
                     }).join("")}
                     <tr class="group-total">
-                        <td colspan="4">Group Total</td>
+                        <td colspan="5">Total</td>
                         <td>${groupTotal}</td>
                     </tr>
                 </tbody>
             </table>
         `;
+
         ledgerContainer.appendChild(groupDiv);
     });
 }
 
+
 function deleteall() {
-    // Clear all journal entries from local storage 
-    localStorage.removeItem("journalEntries"); 
-    // Clear the table in the journal form 
-    document.getElementById("inputTable").querySelector("tbody").innerHTML = ""; 
-    // Update the ledger to reflect changes 
+    localStorage.removeItem("journalEntries");
+    document.getElementById("inputTable").querySelector("tbody").innerHTML = "";
     updateLedger();
+    updateTrialBalance();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     loadData();
     updateLedger();
+    updateTrialBalance();
 });
+
+
+function printPage() {
+    window.print();
+}
+
+function updateTrialBalance() {
+    const trialBalanceTable = document.getElementById("trialBalanceTable").querySelector("tbody");
+    const debitTotalCell = document.getElementById("trialBalanceDebitTotal");
+    const creditTotalCell = document.getElementById("trialBalanceCreditTotal");
+
+    // Retrieve grouped ledger entries (from the ledger data)
+    const groupedEntries = getGroupedEntriesFromLedger();  
+
+    // Clear the trial balance table before updating
+    trialBalanceTable.innerHTML = "";
+
+    // Initialize total sums for Debit and Credit
+    let totalDebit = 0;
+    let totalCredit = 0;
+
+    // Iterate over each group of entries (ledger group)
+    groupedEntries.forEach(group => {
+        const { pr, groupTotal, accountTitle } = group;
+
+        // Use the account title directly from the ledger entry, no need to modify
+        // Remove any extra text like "PR"
+        const accountTitleWithoutPR = accountTitle.split('PR')[0].trim();
+
+        // Determine whether to place groupTotal in Debit or Credit based on PR
+        let debit = 0;
+        let credit = 0;
+
+        if (/^[1|5]/.test(pr)) {
+            debit = groupTotal; // If PR starts with 1 or 5, assign group total to Debit
+        } else if (/^[2|3|4]/.test(pr)) {
+            credit = groupTotal; // If PR starts with 2, 3, or 4, assign group total to Credit
+        }
+
+        // Add the values to the running total
+        totalDebit += debit;
+        totalCredit += credit;
+
+        // Add the entry to the trial balance table
+        const row = trialBalanceTable.insertRow();
+
+        // Account Title, Debit, and Credit columns
+        row.innerHTML = `
+            <td>${accountTitleWithoutPR}</td>
+            <td>${debit}</td>
+            <td>${credit}</td>
+        `;
+    });
+
+    // Update total debit and credit in the trial balance
+    debitTotalCell.textContent = totalDebit.toFixed(2);
+    creditTotalCell.textContent = totalCredit.toFixed(2);
+}
+
+// Function to get grouped entries based on ledger data
+//para ito sa trial balance para yung mga nasa per group, basehan din kung anong pr nila
+function getGroupedEntriesFromLedger() {
+    const groupedEntries = [];
+    
+    const ledgerContainer = document.getElementById("ledgerGroups");  // Assuming the ledger is in this container
+
+    // Get each group of ledger entries
+    const groups = ledgerContainer.querySelectorAll(".group");
+    groups.forEach(group => {
+        const pr = group.querySelector(".group-header").textContent.split(":")[1].trim();  // Extract PR
+        const accountTitle = group.querySelector(".group-header").textContent.split(":")[0].trim();  // Extract Account Title
+        const groupTotal = parseFloat(group.querySelector(".group-total td:last-child").textContent);  // Get the group total
+
+        groupedEntries.push({ pr, groupTotal, accountTitle });
+    });
+
+    return groupedEntries;
+}
