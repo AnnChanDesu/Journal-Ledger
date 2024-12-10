@@ -7,79 +7,109 @@
     <title>General Journal and Ledger</title>
 </head>
 <body>
-    <header>
-        <img src="logo.png" alt="Group Logo" class="logo">
-        <h1>General Journal and Ledger</h1>
-        <p>Creating a general journal and ledger website helps freelancers manage their finances easily and accurately. It simplifies tax preparation, 
-            provides real-time financial insights, and saves time by automating repetitive tasks. 
-            The platform offers organized and professional records, making financial management more efficient and less intimidating. 
-            This tool is beneficial for freelancers and small business owners who need a user-friendly way to track income and expenses.
-        </p>
-    </header>
+    <!-- Homepage and Authentication Container -->
+    <div id="homepage">
+        <header>
+            <h1>Welcome to Tala Balanse</h1>
+            <p>Manage your finances with ease and accuracy.</p>
+        </header>
+        <div class="auth-container">
+            <!-- Registration Section (Visible by default) -->
+            <div id="registerSection">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <input type="text" id="registerUsername" placeholder="Username" required>
+                    <input type="password" id="registerPassword" placeholder="Password" required>
+                    <button type="button" id="registerButton">Register</button>
+                    <button type="button" id="backToLogin" class="hidden">Back to Login</button>
+                </form>
+            </div>
+            <!-- Login Section (Hidden by default) -->
+            <div id="loginSection" class="hidden">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <input type="text" id="loginUsername" placeholder="Username" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="button" id="loginButton">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <div class="container">
-        <!-- Journal Section -->
-        <div class="journal-container">
-            <h2>General Journal Entries</h2>
-            <form id="journalForm">
-                <table id="inputTable">
+    <!-- Journal Application (Hidden by default until login) -->
+    <div id="journalApp" class="hidden">
+        <header>
+            <img src="logo.png" alt="Group Logo" class="logo">
+            <h1>Tala Balanse</h1>
+            <p>Creating a general journal and ledger website helps freelancers manage their finances easily and accurately...</p>
+            <button id="logoutButton" class="btn btn-danger">Logout</button>
+        </header>
+
+        <div class="container">
+            <!-- Journal Section -->
+            <div class="journal-container">
+                <h2>General Journal Entries</h2>
+                <form id="journalForm">
+                    <table id="inputTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Main Account</th>
+                                <th>Posting Ref</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>                    
+                        <tbody>
+                            <!-- Rows will be dynamically populated -->
+                        </tbody>
+                    </table>
+                    <div class="form-actions">
+                        <button type="button" class="btn" onclick="addRow()">Add Entry</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteall()">Restart</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Ledger Section -->
+            <div class="ledger-container">
+                <h2>Ledger</h2>
+                <div id="ledgerGroups">
+                    <!-- Ledger content will be dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Trial Balance Section -->
+            <div class="trial-balance-container">
+                <h2>Trial Balance</h2>
+                <table id="trialBalanceTable">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Main Account</th>
-                            <th>Posting Ref</th>
+                            <th>Account Title</th>
                             <th>Debit</th>
                             <th>Credit</th>
-                            <th>Actions</th>
                         </tr>
-                    </thead>                    
+                    </thead>
                     <tbody>
                         <!-- Rows will be dynamically populated -->
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td id="trialBalanceDebitTotal"></td>
+                            <td id="trialBalanceCreditTotal"></td>
+                        </tr>
+                    </tfoot>
                 </table>
-                <div class="form-actions">
-                    <button type="button" class="btn" onclick="addRow()">Add Entry</button>
-                    <button type="button" class="btn btn-danger" onclick="deleteall()">Restart</button>
-                </div>
-            </form>
-        </div>
+            </div>
 
-        <!-- Ledger Section -->
-        <div class="ledger-container">
-            <h2>Ledger</h2>
-            <div id="ledgerGroups">
-                <!-- Ledger content will be dynamically populated -->
+            <!-- Print Button -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-print" onclick="printPage()">Print</button>
             </div>
         </div>
 
-        <!-- Trial Balance Section -->
-        <div class="trial-balance-container">
-            <h2>Trial Balance</h2>
-            <table id="trialBalanceTable">
-                <thead>
-                    <tr>
-                        <th>Account Title</th>
-                        <th>Debit</th>
-                        <th>Credit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be dynamically populated -->
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total</td>
-                        <td id="trialBalanceDebitTotal"></td>
-                        <td id="trialBalanceCreditTotal"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <!-- Print Button -->
-        <div class="form-actions">
-            <button type="button" class="btn btn-print" onclick="printPage()">Print</button>
-        </div>
     </div>
 
     <footer>
@@ -89,5 +119,6 @@
     </footer>
 
     <script src="journalscript.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
