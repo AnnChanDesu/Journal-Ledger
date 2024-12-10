@@ -24,8 +24,8 @@ body {
 
 /* Logo Styling */
 .logo {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--accent-yellow);
@@ -432,4 +432,30 @@ input.sub-account {
     text-align: right;
     padding: 10px 15px;
     border-top: 2px solid var(--border-light);
+}
+
+
+/* Default visibility styles */
+.hidden {
+    display: none;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+button {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-green);
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--secondary-green);
 }
