@@ -1,3 +1,46 @@
+const accounts = {
+    "101": "Cash",
+    "102": "Petty Cash",
+    "103": "Accounts Receivable",
+    "104": "Allowance for Doubtful Accounts",
+    "105": "Inventory",
+    "106": "Prepaid Expenses",
+    "107": "Investments",
+    "108": "Property, Plant, and Equipment (PPE)",
+    "109": "Accumulated Depreciation",
+    "110": "Intangible Assets",
+    "201": "Accounts Payable",
+    "202": "Notes Payable",
+    "203": "Accrued Liabilities",
+    "204": "Unearned Revenue",
+    "205": "Short-Term Debt",
+    "206": "Long-Term Debt",
+    "301": "Common Stock",
+    "302": "Preferred Stock",
+    "303": "Retained Earnings",
+    "304": "Additional Paid-In Capital",
+    "305": "Treasury Stock",
+    "306": "Dividends Declared",
+    "401": "Sales Revenue",
+    "402": "Service Revenue",
+    "403": "Interest Revenue",
+    "404": "Other Revenue",
+    "501": "Cost of Goods Sold (COGS)",
+    "502": "Salaries Expense",
+    "503": "Rent Expense",
+    "504": "Utilities Expense",
+    "505": "Depreciation Expense",
+    "506": "Supplies Expense",
+    "507": "Advertising Expense",
+    "508": "Insurance Expense",
+    "509": "Miscellaneous Expense",
+    "601": "Gain on Sale of Assets",
+    "602": "Loss on Sale of Assets",
+    "603": "Unrealized Gain on Investments",
+    "604": "Unrealized Loss on Investments"
+};
+
+
 function saveData() {
     const table = document.getElementById("inputTable").querySelector("tbody");
     const rows = table.querySelectorAll("tr");
@@ -22,21 +65,29 @@ function saveData() {
             subPr: "",
             debit: "",
             credit: "",
-            description: ""
+            description: "",
+            mainAccountName: "", // Add this field to store account name
+            subAccountName: ""  // Add this field to store sub-account name
         };
 
         // Capture main row inputs
         inputs.main.forEach((input) => {
             if (input.name === "date[]") entry.date = input.value || "";
             if (input.name === "main_account_title[]") entry.mainAccount = input.value || "";
-            if (input.name === "main_post_ref[]") entry.pr = input.value || "";
+            if (input.name === "main_post_ref[]") {
+                entry.pr = input.value || "";
+                entry.mainAccountName = accounts[entry.pr] || ""; // Get the account name based on PR
+            }
             if (input.name === "debit[]") entry.debit = parseFloat(input.value) || 0;
         });
 
         // Capture sub row inputs
         inputs.sub.forEach((input) => {
             if (input.name === "sub_account_title[]") entry.subAccount = input.value || "";
-            if (input.name === "sub_post_ref[]") entry.subPr = input.value || "";
+            if (input.name === "sub_post_ref[]") {
+                entry.subPr = input.value || "";
+                entry.subAccountName = accounts[entry.subPr] || ""; // Get the sub-account name based on PR
+            }
             if (input.name === "credit[]") entry.credit = parseFloat(input.value) || 0;
         });
 
@@ -53,6 +104,7 @@ function saveData() {
         updateTrialBalance(); // Update trial balance
     }
 }
+
 
 function loadData() {
     const storedEntries = JSON.parse(localStorage.getItem("journalEntries") || "[]");
@@ -77,7 +129,11 @@ function addRow(entry = {}) {
         <td><input type="text" name="main_post_ref[]" value="${entry.pr || ""}" placeholder="PR (ex. 110)" onchange="saveData()" required></td>
         <td><input type="number" name="debit[]" value="${entry.debit || ""}" min="0" step="0.01" onchange="saveData()" required></td>
         <td></td>
-        <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Remove</button></td>
+        <td>
+            <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Remove</button>
+            <button type="button" class="btn btn-warning" onclick="lockRow(this)">Lock</button>
+            <button type="button" class="btn btn-success hidden" onclick="unlockRow(this)">Unlock</button>
+        </td>
     `;
 
     // Sub row
@@ -101,9 +157,42 @@ function addRow(entry = {}) {
     `;
 }
 
+// Lock row inputs
+function lockRow(button) {
+    const row = button.closest("tr").parentElement; // Get the parent row (main, sub, description)
+    const inputs = row.querySelectorAll("input");
+
+    // Disable inputs
+    inputs.forEach(input => {
+        input.disabled = true;
+    });
+
+    // Show unlock button and hide lock button
+    button.classList.add("hidden");
+    const unlockButton = button.nextElementSibling;
+    unlockButton.classList.remove("hidden");
+}
+
+// Unlock row inputs
+function unlockRow(button) {
+    const row = button.closest("tr").parentElement; // Get the parent row (main, sub, description)
+    const inputs = row.querySelectorAll("input");
+
+    // Enable inputs
+    inputs.forEach(input => {
+        input.disabled = false;
+    });
+
+    // Show lock button and hide unlock button
+    button.classList.add("hidden");
+    const lockButton = button.previousElementSibling;
+    lockButton.classList.remove("hidden");
+}
+
+
 
 function deleteRow(button) {
-    const row = button.closest("tr");
+    const row = button.closest("tr"); //find the closest row to delete
     const subRow = row.nextElementSibling;
     const descRow = subRow.nextElementSibling;
 
@@ -125,7 +214,7 @@ function updateLedger() {
             groups[entry.pr].push({
                 ...entry,
                 accountType: '',
-                accountTitle: entry.mainAccount,
+                accountTitle: entry.mainAccountName || entry.mainAccount, // Use account name if available
                 credit: 0
             });
         }
@@ -134,7 +223,7 @@ function updateLedger() {
             groups[entry.subPr].push({
                 ...entry,
                 accountType: "",
-                accountTitle: entry.subAccount,
+                accountTitle: entry.subAccountName || entry.subAccount, // Use sub-account name if available
                 debit: 0,
                 credit: entry.credit
             });
@@ -146,13 +235,13 @@ function updateLedger() {
         const groupDiv = document.createElement("div");
         groupDiv.classList.add("group");
 
-        let groupTotal = 0; // Initialize group total for the posting reference
+        let groupTotal = 0;
 
         // Header for the group
         groupDiv.innerHTML = `
             <div class="group-header">
                 <div class="account-header">
-                    <span class="account-title">${entries[0].accountTitle}</span> <!-- Removed parenthesis here -->
+                    <span class="account-title">${entries[0].accountTitle}</span>
                     <span class="posting-ref">PR: ${prKey}</span>
                 </div>
             </div>
@@ -174,20 +263,17 @@ function updateLedger() {
                         let entryTotal = 0;
 
                         if (/^[2-4]/.test(prKey)) {
-                            // If PR starts with 2, 3, or 4, calculate Total = Credit - Debit
                             entryTotal = adjustedCredit - adjustedDebit;
                         } else {
-                            // If PR starts with 1 or 5, calculate Total = Debit - Credit
                             entryTotal = adjustedDebit - adjustedCredit;
                         }
 
-                        // Accumulate the total for the posting reference
                         groupTotal += entryTotal;
 
                         return `
                             <tr>
                                 <td>${entry.date}</td>
-                                <td>${entry.description} </td> <!-- Removed the account type here -->
+                                <td>${entry.description}</td>
                                 <td>J1</td>
                                 <td>${adjustedDebit}</td>
                                 <td>${adjustedCredit}</td>
@@ -206,6 +292,7 @@ function updateLedger() {
         ledgerContainer.appendChild(groupDiv);
     });
 }
+
 
 
 function deleteall() {
